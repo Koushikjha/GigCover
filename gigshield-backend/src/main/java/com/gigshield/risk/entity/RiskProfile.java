@@ -1,4 +1,3 @@
-// com/gigshield/risk/entity/RiskProfile.java
 package com.gigshield.risk.entity;
 
 import jakarta.persistence.*;
@@ -29,9 +28,8 @@ public class RiskProfile {
     private Integer recommendedPremium;
 
     @Column(nullable = false)
-    private String riskBand;          // LOW | MEDIUM | HIGH
+    private String riskBand;
 
-    /** Rolling count of disruptions in user's zone (last 30 days) */
     private Integer disruptionFrequency;
 
     private LocalDateTime lastEvaluatedAt;

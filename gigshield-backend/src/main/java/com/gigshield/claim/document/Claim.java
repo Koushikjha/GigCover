@@ -1,4 +1,3 @@
-// com/gigshield/claim/document/Claim.java
 package com.gigshield.claim.document;
 
 import com.gigshield.claim.enums.ClaimStatus;
@@ -35,14 +34,7 @@ public class Claim {
     private String  adminNote;
     private String  razorpayPayoutId;
 
-    /**
-     * When the underlying disruption/cancellation actually happened —
-     * distinct from {@code createdAt} (when the claim record was written).
-     * Set from the reported cancellation time for ORDER_CANCELLED claims.
-     * Used both for audit and, for ORDER_CANCELLED, to distinguish two
-     * genuinely different cancellations from an accidental duplicate
-     * submission of the same one.
-     */
+
     private LocalDateTime eventOccurredAt;
 
     private LocalDateTime createdAt;

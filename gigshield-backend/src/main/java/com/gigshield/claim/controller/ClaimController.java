@@ -1,4 +1,3 @@
-// com/gigshield/claim/controller/ClaimController.java
 package com.gigshield.claim.controller;
 
 import com.gigshield.claim.dto.AdminReviewRequest;
@@ -31,11 +30,7 @@ public class ClaimController {
         return ResponseEntity.ok(claimService.getClaimsForUser(user.getUsername(), page));
     }
 
-    /**
-     * Worker-initiated — the only way an ORDER_CANCELLED claim gets
-     * created. See EventType#ORDER_CANCELLED for why this is never
-     * automated.
-     */
+
     @PostMapping("/cancelled-order")
     public ResponseEntity<ClaimResponse> reportCancelledOrder(
             @AuthenticationPrincipal UserDetails user,

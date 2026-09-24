@@ -1,4 +1,3 @@
-// com/gigshield/policy/entity/Policy.java
 package com.gigshield.policy.entity;
 
 import com.gigshield.policy.enums.PolicyStatus;

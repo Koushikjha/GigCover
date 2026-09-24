@@ -1,4 +1,3 @@
-// com/gigshield/auth/dto/RegisterRequest.java — simplified, no password
 package com.gigshield.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;

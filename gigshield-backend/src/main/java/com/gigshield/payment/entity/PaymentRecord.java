@@ -1,4 +1,3 @@
-// com/gigshield/payment/entity/PaymentRecord.java
 package com.gigshield.payment.entity;
 
 import com.gigshield.payment.enums.PaymentStatus;
@@ -26,11 +25,11 @@ public class PaymentRecord {
     private Long userId;
 
     private Long   policyId;
-    private String claimId;            // MongoDB claim ID
+    private String claimId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PaymentType type;          // PREMIUM_COLLECTION | CLAIM_PAYOUT
+    private PaymentType type;
 
     @Column(nullable = false)
     private Integer amountInr;

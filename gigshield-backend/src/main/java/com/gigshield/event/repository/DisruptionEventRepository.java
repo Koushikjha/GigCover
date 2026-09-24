@@ -1,4 +1,3 @@
-// com/gigshield/event/repository/DisruptionEventRepository.java
 package com.gigshield.event.repository;
 
 import com.gigshield.event.entity.DisruptionEvent;

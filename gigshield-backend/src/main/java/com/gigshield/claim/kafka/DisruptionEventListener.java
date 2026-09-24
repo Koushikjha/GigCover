@@ -1,4 +1,3 @@
-// com/gigshield/claim/kafka/DisruptionEventListener.java
 package com.gigshield.claim.kafka;
 
 import com.gigshield.claim.service.ClaimService;
@@ -19,40 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Claims-automation edge of the event-driven pipeline.
- *
- * Consumes {@link DisruptionEventMessage}s from {@link KafkaTopics#DISRUPTION_EVENT_CREATED}
- * and fans each city-wide disruption out into one parametric-claim attempt per
- * worker who currently holds an active policy in that city. This replaces what
- * used to require a manual/synchronous call per worker — the event alone is
- * now enough to (asynchronously) settle every eligible claim in the city.
- *
- * Each worker is processed independently and failures are isolated: one
- * worker's ineligibility (e.g. a duplicate claim, no active policy) never
- * blocks the rest of the batch. A genuinely unexpected failure (DB down, etc.)
- * still propagates so the container's error handler can retry / dead-letter
- * the whole message.
- *
- * Before any of that fan-out happens, {@link DisruptionEventVerificationService}
- * independently corroborates the event against the ML sidecar (trigger-check
- * + risk-score) — real coordinates and real timing, not approximations:
- * coordinates are averaged from the actual affected workers' own registered
- * locations (not a hardcoded city table), and the check runs as of the
- * event's {@code occurredAt} (when it was actually detected/created), not
- * "now" — a Kafka message can sit briefly before a consumer picks it up, and
- * checking "is it disrupted right now" could corroborate (or reject) the
- * event against the wrong moment. Only a "genuine" verdict lets processing
- * continue to publish the event forward into claims automation; per-claim
- * fraud scoring still happens exactly where it always has, inside
- * {@code ClaimService#processParametricClaim}.
- *
- * {@link EventType#ORDER_CANCELLED} is never expected here — it is a single
- * worker's single missed order, not a city-wide event, and is only ever
- * created by {@code ClaimService#reportCancelledOrder} (never published to
- * this topic). The guard below is defense-in-depth in case that invariant
- * is ever broken upstream.
- */
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -93,10 +59,6 @@ public class DisruptionEventListener {
 
         double[] coordinates = averageCoordinates(userIds);
 
-        // Event-level genuineness gate — trigger-check + risk-score against
-        // the real affected workers' coordinates, as of when the event
-        // actually occurred — before this event is allowed to "publish"
-        // forward into per-worker claim creation / payout automation.
         DisruptionEventVerdict verdict = verificationService.verify(
                 message.getEventType(), message.getCity(),
                 coordinates == null ? null : coordinates[0],
@@ -117,8 +79,6 @@ public class DisruptionEventListener {
                 claimService.processParametricClaim(userId, message.getEventType());
                 created++;
             } catch (IllegalStateException e) {
-                // Idempotency guard tripped (duplicate claim) or no active policy
-                // any more (race with expiry) — expected, not an error.
                 log.debug("Skipping auto-claim for userId={} event={}: {}",
                         userId, message.getEventType(), e.getMessage());
                 skipped++;
@@ -133,15 +93,6 @@ public class DisruptionEventListener {
                 message.getEventId(), message.getCity(), created, skipped);
     }
 
-    /**
-     * Averages the real registered coordinates of every affected worker —
-     * this replaces what used to be a hardcoded city-centroid lookup table.
-     * With several workers spread across a city this is a coarser signal
-     * than any one worker's own coordinates (used instead for the
-     * ORDER_CANCELLED self-report path, where there's exactly one worker to
-     * ask), but it's still the real, actual locations of the people this
-     * event would pay out to — not a guess.
-     */
     private double[] averageCoordinates(Set<Long> userIds) {
         double latSum = 0, lonSum = 0;
         int counted = 0;

@@ -1,4 +1,3 @@
-// com/gigshield/payment/controller/PaymentController.java
 package com.gigshield.payment.controller;
 
 import com.gigshield.payment.dto.CreateOrderResponse;
@@ -21,9 +20,7 @@ public class PaymentController {
     private final PolicyService  policyService;
     private final UserService    userService;
 
-    /**
-     * Worker calls this after GET /policies to get a Razorpay order to pay.
-     */
+
     @PostMapping("/order/{policyId}")
     public ResponseEntity<CreateOrderResponse> createOrder(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -41,10 +38,6 @@ public class PaymentController {
         return ResponseEntity.ok(order);
     }
 
-    /**
-     * Razorpay posts signed events here.
-     * Permitted without JWT — verified by webhook signature inside service.
-     */
     @PostMapping("/webhook")
     public ResponseEntity<Void> webhook(
             @RequestBody String payload,

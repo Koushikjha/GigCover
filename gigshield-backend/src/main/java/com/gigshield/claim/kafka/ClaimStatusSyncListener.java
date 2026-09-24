@@ -1,4 +1,3 @@
-// com/gigshield/claim/kafka/ClaimStatusSyncListener.java
 package com.gigshield.claim.kafka;
 
 import com.gigshield.claim.enums.ClaimStatus;
@@ -12,16 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-/**
- * Closes the loop on the event-driven pipeline: once the payment module
- * reports a payout as actually completed, the claim it paid out on is
- * updated from AUTO_APPROVED/ADMIN_APPROVED to PAID (or FAILED) — a
- * transition nothing previously performed, since payouts used to be "fire
- * and forget" synchronous calls with no completion signal to react to.
- *
- * Runs in its own consumer group from {@link com.gigshield.payment.kafka.PayoutAuditListener}
- * so a slow claims-DB write never backs up the audit log, and vice versa.
- */
+
 @Slf4j
 @Component
 @RequiredArgsConstructor

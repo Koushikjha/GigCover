@@ -1,4 +1,3 @@
-// com/gigshield/claim/repository/ClaimRepository.java
 package com.gigshield.claim.repository;
 
 import com.gigshield.claim.document.Claim;
@@ -20,12 +19,7 @@ public interface ClaimRepository extends MongoRepository<Claim, String> {
     boolean existsByUserIdAndPolicyIdAndTriggerEvent(
             Long userId, Long policyId, EventType event);
 
-    /**
-     * Dedup for {@code ClaimService#reportCancelledOrder}: blocks an
-     * accidental duplicate submission of the *same* cancellation (identical
-     * reported time) while still allowing a worker to report multiple,
-     * genuinely different cancelled orders across the week.
-     */
+
     boolean existsByUserIdAndPolicyIdAndTriggerEventAndEventOccurredAt(
             Long userId, Long policyId, EventType event, LocalDateTime eventOccurredAt);
 }

@@ -1,4 +1,3 @@
-// com/gigshield/auth/controller/AuthController.java
 package com.gigshield.auth.controller;
 
 import com.gigshield.auth.dto.AuthResponse;
@@ -20,10 +19,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    /**
-     * Step 1 — request OTP.
-     * Works for both new and existing users.
-     */
+
     @PostMapping("/send-otp")
     public ResponseEntity<Void> sendOtp(
             @Valid @RequestBody SendOtpRequest request) {
@@ -31,11 +27,6 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Step 2 — verify OTP and receive JWT.
-     * New users must include fullName, city, latitude, longitude.
-     * Existing users only need phone + otp.
-     */
     @PostMapping("/verify-otp")
     public ResponseEntity<AuthResponse> verifyOtp(
             @Valid @RequestBody VerifyOtpRequest request) {

@@ -1,4 +1,3 @@
-// com/gigshield/auth/service/AuthService.java
 package com.gigshield.auth.service;
 
 import com.gigshield.auth.dto.AuthResponse;
@@ -30,28 +29,22 @@ public class AuthService {
     private final UserService          userService;
     private final RefreshTokenRepository refreshTokenRepo;
 
-    // ── Step 1 — send OTP ─────────────────────────────────────────────────────
 
     @Transactional
     public void sendOtp(SendOtpRequest request) {
         otpService.generateAndSend(request.getPhone());
     }
 
-    // ── Step 2 — verify OTP → issue JWT ──────────────────────────────────────
 
     @Transactional
     public AuthResponse verifyOtp(VerifyOtpRequest request) {
-        // Verify OTP first — throws if invalid/expired
         otpService.verify(request.getPhone(), request.getOtp());
 
-        // Build registration data from request if provided
         RegisterRequest registrationData = buildRegistrationData(request);
 
-        // Find existing user or create new one
         User user = userService.findOrCreate(
                 request.getPhone(), registrationData);
 
-        // Check account not banned
         if (!user.isAccountNonLocked()) {
             throw new IllegalStateException(
                     "Account is permanently suspended");
@@ -60,7 +53,6 @@ public class AuthService {
         return buildTokenPair(user.getPhone(), user.getRole().name());
     }
 
-    // ── Refresh ───────────────────────────────────────────────────────────────
 
     @Transactional
     public AuthResponse refresh(RefreshTokenRequest request) {
@@ -79,7 +71,6 @@ public class AuthService {
         return buildTokenPair(user.getPhone(), user.getRole().name());
     }
 
-    // ── Logout ────────────────────────────────────────────────────────────────
 
     @Transactional
     public void logout(String phone) {
@@ -87,7 +78,6 @@ public class AuthService {
         log.info("All refresh tokens revoked for user={}", phone);
     }
 
-    // ── Internal ──────────────────────────────────────────────────────────────
 
     private AuthResponse buildTokenPair(String phone, String role) {
         String accessToken = jwtUtil.generateAccessToken(

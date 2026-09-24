@@ -1,4 +1,3 @@
-// com/gigshield/event/entity/DisruptionEvent.java
 package com.gigshield.event.entity;
 
 import com.gigshield.event.enums.EventStatus;
@@ -28,7 +27,6 @@ public class DisruptionEvent {
     @Column(nullable = false)
     private String city;
 
-    /** Raw sensor value: mm/hr for RAIN, AQI index for AQI, 0/1 flag for others */
     private Double metricValue;
 
     @Column(nullable = false)
@@ -40,10 +38,8 @@ public class DisruptionEvent {
     @Column(nullable = false)
     private EventStatus status;
 
-    /** Source: IMD, CPCB, ADMIN, EXTERNAL_FEED */
     private String sourceSystem;
 
-    /** Optional external reference (e.g., government order number) */
     private String externalReference;
 
     @Column(nullable = false, updatable = false)

@@ -1,4 +1,3 @@
-// com/gigshield/claim/dto/ClaimResponse.java
 package com.gigshield.claim.dto;
 
 import com.gigshield.claim.enums.ClaimStatus;

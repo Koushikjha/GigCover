@@ -1,4 +1,3 @@
-// com/gigshield/risk/repository/RiskRepository.java
 package com.gigshield.risk.repository;
 
 import com.gigshield.risk.entity.RiskProfile;

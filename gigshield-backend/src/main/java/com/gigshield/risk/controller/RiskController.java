@@ -1,4 +1,3 @@
-// com/gigshield/risk/controller/RiskController.java
 package com.gigshield.risk.controller;
 
 import com.gigshield.risk.dto.RiskScoreResponse;

@@ -1,4 +1,3 @@
-// com/gigshield/dashboard/service/DashboardService.java
 package com.gigshield.dashboard.service;
 
 import com.gigshield.claim.document.Claim;
@@ -38,15 +37,12 @@ public class DashboardService {
     public WorkerDashboardResponse getWorkerDashboard(String phone) {
         User user = userService.findByPhone(phone);
 
-        // Active policy (may be absent)
         var activePolicySafe = safeGetActivePolicy(phone);
 
-        // Last 5 claims
         List<Claim> recentClaims = claimRepository
                 .findByUserIdOrderByCreatedAtDesc(user.getId(), PageRequest.of(0, 5))
                 .getContent();
 
-        // Total paid out
         int totalPaidOut = recentClaims.stream()
                 .filter(c -> c.getStatus() == ClaimStatus.PAID
                         || c.getStatus() == ClaimStatus.AUTO_APPROVED
@@ -90,7 +86,6 @@ public class DashboardService {
                 .findByTypeAndStatus(PaymentType.CLAIM_PAYOUT, PaymentStatus.SUCCESS)
                 .stream().mapToInt(p -> p.getAmountInr()).sum();
 
-        // Claims by status breakdown
         Map<String, Long> claimsByStatus = List.of(ClaimStatus.values()).stream()
                 .collect(Collectors.toMap(
                         Enum::name,

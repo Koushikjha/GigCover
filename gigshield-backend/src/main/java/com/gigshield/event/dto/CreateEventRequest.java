@@ -1,4 +1,3 @@
-// com/gigshield/event/dto/CreateEventRequest.java
 package com.gigshield.event.dto;
 
 import com.gigshield.event.enums.EventType;

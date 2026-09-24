@@ -1,4 +1,3 @@
-// com/gigshield/user/repository/UserRepository.java
 package com.gigshield.user.repository;
 
 import com.gigshield.user.entity.User;

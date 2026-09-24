@@ -1,4 +1,3 @@
-// com/gigshield/event/service/EventService.java
 package com.gigshield.event.service;
 
 import com.gigshield.event.dto.CreateEventRequest;
@@ -30,9 +29,6 @@ public class EventService {
     @Transactional
     public EventResponse createEvent(CreateEventRequest request) {
         if (request.getEventType() == EventType.ORDER_CANCELLED) {
-            // ORDER_CANCELLED is a single worker's single missed order, not
-            // a city-wide DisruptionEvent — see EventType's javadoc. Only
-            // ClaimService#reportCancelledOrder can create one.
             throw new IllegalArgumentException(
                     "ORDER_CANCELLED cannot be created as a city-wide event — "
                             + "workers report it directly via POST /api/v1/claims/cancelled-order");
@@ -51,8 +47,6 @@ public class EventService {
         log.info("Disruption event created: type={} city={} id={}",
                 event.getEventType(), event.getCity(), event.getId());
 
-        // Publish to Kafka only after the DB transaction actually commits —
-        // otherwise a rolled-back event could still trigger downstream claims.
         publishAfterCommit(event);
 
         return toResponse(event);
@@ -80,12 +74,6 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Single source of truth for parametric trigger check.
-     * ML sidecar owns the threshold decision — Spring Boot just checks
-     * whether an ACTIVE event record exists for this city + type.
-     * No threshold comparison happens here anymore.
-     */
     public boolean isTriggerActive(String city, EventType type) {
         return eventRepository
                 .existsByCityAndEventTypeAndStatus(

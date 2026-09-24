@@ -1,4 +1,3 @@
-// com/gigshield/policy/service/PolicyService.java
 package com.gigshield.policy.service;
 
 import com.gigshield.config.AppConstants;
@@ -35,7 +34,6 @@ public class PolicyService {
     private final UserService      userService;
     private final RiskService      riskService;
 
-    // ── Purchase ──────────────────────────────────────────────────────────────
 
     @Transactional
     public PolicyResponse purchasePolicy(String phone, PurchasePolicyRequest request) {
@@ -55,9 +53,6 @@ public class PolicyService {
 
         PolicyTier tier = request.getTier();
 
-        // Price by the live risk score of the worker's registered place —
-        // same ML-backed signal RiskController exposes at GET /api/v1/risk/score,
-        // reused here (and Redis-cached there) rather than calling ML twice.
         RiskScoreResponse risk    = riskService.getRiskScoreForUser(phone);
         int               premium = resolvePremium(tier, risk.getRiskScore());
 
@@ -88,15 +83,11 @@ public class PolicyService {
         return toResponse(policy);
     }
 
-    // ── Tier info (for purchase screen) ──────────────────────────────────────
 
     public List<PolicyTierInfoResponse> getAllTierInfo(String phone) {
         User   user   = userService.findByPhone(phone);
         double income = user.getWeeklyIncomeEstimate();
 
-        // One risk lookup (cached in RiskService/Redis) reused across all
-        // three tiers so the plan-selection screen shows genuinely
-        // risk-adjusted prices for the worker's registered city.
         RiskScoreResponse risk = riskService.getRiskScoreForUser(phone);
 
         return Arrays.stream(PolicyTier.values())
@@ -110,7 +101,6 @@ public class PolicyService {
                 .collect(Collectors.toList());
     }
 
-    // ── Queries ───────────────────────────────────────────────────────────────
 
     public PolicyResponse getActivePolicy(String phone) {
         User user = userService.findByPhone(phone);
@@ -162,9 +152,7 @@ public class PolicyService {
         return policyRepository.count();
     }
 
-    // ── Tier resolution helpers ───────────────────────────────────────────────
 
-    /** Flat per-tier base premium for a place with "average" risk — the anchor {@link #resolvePremium} scales. */
     public static int resolveBasePremium(PolicyTier tier) {
         return switch (tier) {
             case STANDARD -> AppConstants.PREMIUM_STANDARD_INR;
@@ -173,15 +161,6 @@ public class PolicyService {
         };
     }
 
-    /**
-     * The actual price charged: the tier's base premium, scaled by a
-     * multiplier derived linearly from the place's live ML risk-score
-     * (0-100) between {@link AppConstants#RISK_PREMIUM_MULTIPLIER_FLOOR}
-     * and {@link AppConstants#RISK_PREMIUM_MULTIPLIER_CEIL}. A higher-risk
-     * place costs more; a lower-risk place costs less. Falls back to the
-     * flat base premium if no risk score is available (e.g. ML sidecar
-     * down and RiskService's fallback response somehow yields a null score).
-     */
     public static int resolvePremium(PolicyTier tier, Double riskScore) {
         int base = resolveBasePremium(tier);
         if (riskScore == null) {

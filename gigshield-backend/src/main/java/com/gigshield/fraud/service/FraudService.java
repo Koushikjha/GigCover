@@ -1,4 +1,3 @@
-// com/gigshield/fraud/service/FraudService.java
 package com.gigshield.fraud.service;
 
 import com.gigshield.config.AppConstants;
@@ -23,16 +22,12 @@ public class FraudService {
     private final FraudRepository  fraudRepository;
     private final UserService      userService;
 
-    /**
-     * Evaluates fraud for a parametric claim.
-     * WAR events bypass ML — flat approval per product spec.
-     */
     @Transactional
     public FraudCheckResponse evaluate(Long userId, String city,
                                        Double lat, Double lon,
                                        EventType eventType, Long policyId,
                                        String claimId) {
-        // Idempotency guard
+
         if (fraudRepository.existsByClaimId(claimId)) {
             log.warn("Duplicate fraud check attempted for claimId={}", claimId);
             FraudCheckResponse dup = new FraudCheckResponse();
@@ -60,7 +55,6 @@ public class FraudService {
 
             response = mlClient.checkFraud(request);
 
-            // Single source of truth for threshold decision
             if (response.getFraudScore() < AppConstants.FRAUD_AUTO_APPROVE_THRESHOLD) {
                 response.setRecommendation("AUTO_APPROVE");
             } else {
@@ -68,7 +62,6 @@ public class FraudService {
             }
         }
 
-        // Persist audit record
         FraudRecord record = FraudRecord.builder()
                 .userId(userId)
                 .claimId(claimId)
@@ -84,9 +77,6 @@ public class FraudService {
         return response;
     }
 
-    /**
-     * Called after admin rejects a claim — issues strike and auto-bans at threshold.
-     */
     @Transactional
     public void recordFraudStrike(Long userId, String claimId) {
         fraudRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()

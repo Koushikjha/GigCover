@@ -1,4 +1,3 @@
-// com/gigshield/payment/repository/PaymentRepository.java
 package com.gigshield.payment.repository;
 
 import com.gigshield.payment.entity.PaymentRecord;

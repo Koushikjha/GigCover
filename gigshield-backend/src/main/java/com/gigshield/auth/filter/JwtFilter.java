@@ -1,4 +1,3 @@
-// com/gigshield/auth/filter/JwtFilter.java
 package com.gigshield.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,13 +63,12 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // ── Ban check — O(1) Redis lookup before any DB call ─────────────────
         if (isBanned(username)) {
             log.warn("Banned user attempted access: {}", username);
             writeErrorResponse(response,
                     HttpStatus.FORBIDDEN,
                     "Account permanently suspended");
-            return;    // do NOT continue the filter chain
+            return;
         }
 
         // ── Normal JWT authentication ─────────────────────────────────────────
@@ -88,15 +86,12 @@ public class JwtFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    // ── helpers ───────────────────────────────────────────────────────────────
 
     private boolean isBanned(String phone) {
         try {
             return Boolean.TRUE.equals(
                     redisTemplate.hasKey("ban:" + phone));
         } catch (Exception e) {
-            // Redis unavailable — fail open to avoid locking out all users,
-            // but log loudly so ops is alerted
             log.error("Redis ban-check failed for user {}. Failing open: {}",
                     phone, e.getMessage());
             return false;

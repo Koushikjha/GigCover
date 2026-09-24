@@ -1,4 +1,3 @@
-// com/gigshield/integration/dto/AqiResponse.java
 package com.gigshield.integration.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -35,10 +34,7 @@ public class AqiResponse {
         @JsonProperty("time")
         private TimeInfo time;
 
-        /**
-         * Safe int conversion.
-         * WAQI returns "-" as aqi value when station data is unavailable.
-         */
+
         public int getAqiSafe() {
             if (aqi == null) return 0;
             if (aqi instanceof Integer i) return i;
@@ -46,7 +42,7 @@ public class AqiResponse {
             try {
                 return Integer.parseInt(aqi.toString().trim());
             } catch (NumberFormatException e) {
-                return 0;   // "-" or any non-numeric → treat as no data
+                return 0;
             }
         }
     }
@@ -58,7 +54,7 @@ public class AqiResponse {
         private String name;
 
         @JsonProperty("geo")
-        private double[] geo;   // [lat, lon]
+        private double[] geo;
     }
 
     @Data

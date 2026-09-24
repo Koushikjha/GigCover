@@ -1,4 +1,3 @@
-// com/gigshield/policy/repository/PolicyRepository.java
 package com.gigshield.policy.repository;
 
 import com.gigshield.policy.entity.Policy;
@@ -25,11 +24,7 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
     @Query("SELECT p FROM Policy p WHERE p.status = 'ACTIVE' AND p.endDate < :today")
     List<Policy> findExpiredPolicies(LocalDate today);
 
-    /**
-     * All currently-active policies for a city — used by the Kafka disruption-event
-     * consumer to fan a single city-wide event out into one parametric claim
-     * attempt per covered worker.
-     */
+
     @Query("SELECT p FROM Policy p WHERE p.city = :city AND p.status = 'ACTIVE' " +
             "AND p.startDate <= :today AND p.endDate >= :today")
     List<Policy> findActivePoliciesByCity(String city, LocalDate today);

@@ -1,4 +1,3 @@
-// com/gigshield/dashboard/dto/AdminDashboardResponse.java
 package com.gigshield.dashboard.dto;
 
 import lombok.*;

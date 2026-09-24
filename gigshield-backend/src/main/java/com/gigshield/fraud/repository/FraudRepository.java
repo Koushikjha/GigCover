@@ -1,4 +1,3 @@
-// com/gigshield/fraud/repository/FraudRepository.java
 package com.gigshield.fraud.repository;
 
 import com.gigshield.fraud.entity.FraudRecord;

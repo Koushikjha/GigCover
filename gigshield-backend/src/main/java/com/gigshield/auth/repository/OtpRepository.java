@@ -1,4 +1,3 @@
-// com/gigshield/auth/repository/OtpRepository.java
 package com.gigshield.auth.repository;
 
 import com.gigshield.auth.entity.OtpRecord;

@@ -1,4 +1,3 @@
-// com/gigshield/integration/dto/OpenMeteoResponse.java
 package com.gigshield.integration.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -29,9 +28,9 @@ public class OpenMeteoResponse {
         private String time;
 
         @JsonProperty("rain")
-        private Double rain;              // mm — rain only
+        private Double rain;
 
         @JsonProperty("precipitation")
-        private Double precipitation;    // mm — rain + showers + snow
+        private Double precipitation;
     }
 }

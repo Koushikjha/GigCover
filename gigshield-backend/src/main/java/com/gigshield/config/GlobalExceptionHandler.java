@@ -1,4 +1,3 @@
-// com/gigshield/config/GlobalExceptionHandler.java
 package com.gigshield.config;
 
 import lombok.extern.slf4j.Slf4j;

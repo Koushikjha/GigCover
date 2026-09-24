@@ -1,4 +1,3 @@
-// com/gigshield/dashboard/controller/DashboardController.java
 package com.gigshield.dashboard.controller;
 
 import com.gigshield.dashboard.dto.AdminDashboardResponse;

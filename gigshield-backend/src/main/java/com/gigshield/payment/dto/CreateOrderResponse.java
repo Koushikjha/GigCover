@@ -1,4 +1,3 @@
-// com/gigshield/payment/dto/CreateOrderResponse.java
 package com.gigshield.payment.dto;
 
 import lombok.*;

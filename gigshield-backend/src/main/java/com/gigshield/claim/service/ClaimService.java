@@ -1,4 +1,3 @@
-// com/gigshield/claim/service/ClaimService.java
 package com.gigshield.claim.service;
 
 import com.gigshield.claim.document.Claim;
@@ -44,9 +43,6 @@ public class ClaimService {
 
     public ClaimResponse processParametricClaim(Long userId, EventType eventType) {
         if (eventType == EventType.ORDER_CANCELLED) {
-            // Defense-in-depth: this path is for the automated city-wide
-            // pipeline only. ORDER_CANCELLED claims are worker-reported —
-            // see reportCancelledOrder() and EventType's javadoc for why.
             throw new IllegalArgumentException(
                     "ORDER_CANCELLED claims must be reported by the worker via reportCancelledOrder(), "
                             + "not processed automatically");
@@ -55,7 +51,6 @@ public class ClaimService {
         User   user   = userService.findById(userId);
         Policy policy = policyService.getActivePolicyEntity(userId);
 
-        // Idempotency
         if (claimRepository.existsByUserIdAndPolicyIdAndTriggerEvent(
                 userId, policy.getId(), eventType)) {
             throw new IllegalStateException(
@@ -63,7 +58,6 @@ public class ClaimService {
                             + " event=" + eventType);
         }
 
-        // Parametric trigger must be active
         if (!eventService.isTriggerActive(policy.getCity(), eventType)) {
             throw new IllegalStateException(
                     "Parametric trigger not active: city=" + policy.getCity()
@@ -72,7 +66,6 @@ public class ClaimService {
 
         int payout = calculatePayout(policy, eventType);
 
-        // Pre-save to get a stable claimId before fraud check
         Claim claim = Claim.builder()
                 .userId(userId)
                 .policyId(policy.getId())
@@ -84,7 +77,6 @@ public class ClaimService {
                 .build();
         claim = claimRepository.save(claim);
 
-        // Fraud evaluation — pass claimId for idempotency in FraudService
         FraudCheckResponse fraud = fraudService.evaluate(
                 userId,
                 policy.getCity(),
@@ -92,7 +84,7 @@ public class ClaimService {
                 user.getLongitude(),
                 eventType,
                 policy.getId(),
-                claim.getId());          // ← fixed: 6-arg signature
+                claim.getId());
 
         claim.setFraudScore(fraud.getFraudScore());
 
@@ -112,18 +104,7 @@ public class ClaimService {
         return toResponse(claim);
     }
 
-    /**
-     * The ONLY way an ORDER_CANCELLED claim gets created — see
-     * EventType#ORDER_CANCELLED and this class's package docs for why it's
-     * worker-initiated rather than automated.
-     *
-     * Genuineness is checked against the reported cancellation time, not
-     * "now": {@code request.getCancelledAt()} is passed straight through to
-     * {@link DisruptionEventVerificationService}, which asks the ML sidecar
-     * to score trigger/risk as of that exact moment using this worker's own
-     * real registered coordinates — not a city-wide approximation, since
-     * there's exactly one worker involved here.
-     */
+
     public ClaimResponse reportCancelledOrder(String phone, ReportCancelledOrderRequest request) {
         User   user   = userService.findByPhone(phone);
         Policy policy = policyService.getActivePolicyEntity(user.getId());
@@ -140,19 +121,12 @@ public class ClaimService {
                             + AppConstants.ORDER_CANCELLED_REPORT_WINDOW_HOURS + " hours of happening");
         }
 
-        // Dedup: block resubmitting the exact same cancellation, not
-        // multiple genuinely different ones (see ClaimRepository).
         if (claimRepository.existsByUserIdAndPolicyIdAndTriggerEventAndEventOccurredAt(
                 user.getId(), policy.getId(), EventType.ORDER_CANCELLED, cancelledAt)) {
             throw new IllegalStateException("This cancellation has already been reported");
         }
 
-        // Genuineness gate — evaluated AS OF cancelledAt, using this
-        // worker's own real coordinates. This is the hard gate that keeps
-        // the self-report flow from being a rubber stamp: a claim only
-        // proceeds to fraud-scoring/payout if ML corroborates that a real
-        // trigger-worthy disruption was actually happening, at that place,
-        // at that time.
+
         DisruptionEventVerdict verdict = verificationService.verify(
                 EventType.ORDER_CANCELLED, policy.getCity(),
                 user.getLatitude(), user.getLongitude(), cancelledAt);
@@ -176,7 +150,6 @@ public class ClaimService {
                 .build();
         claim = claimRepository.save(claim);
 
-        // Same fraud evaluation the automated path uses — per-claim, per-user.
         FraudCheckResponse fraud = fraudService.evaluate(
                 user.getId(), policy.getCity(), user.getLatitude(), user.getLongitude(),
                 EventType.ORDER_CANCELLED, policy.getId(), claim.getId());
@@ -233,7 +206,6 @@ public class ClaimService {
         } else {
             claim.setStatus(ClaimStatus.ADMIN_REJECTED);
             claimRepository.save(claim);
-            // Strike recorded against the user
             fraudService.recordFraudStrike(claim.getUserId(), claimId);
             log.warn("Claim {} rejected — strike issued to userId={}",
                     claimId, claim.getUserId());
@@ -242,7 +214,6 @@ public class ClaimService {
         return toResponse(claim);
     }
 
-    // ── helpers ──────────────────────────────────────────────────────────────
 
     private int calculatePayout(Policy policy, EventType type) {
         return switch (type) {

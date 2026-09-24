@@ -1,4 +1,3 @@
-// com/gigshield/event/dto/EventResponse.java
 package com.gigshield.event.dto;
 
 import com.gigshield.event.enums.EventStatus;

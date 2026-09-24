@@ -1,4 +1,3 @@
-// com/gigshield/policy/controller/PolicyController.java
 package com.gigshield.policy.controller;
 
 import com.gigshield.policy.dto.PolicyResponse;
@@ -23,11 +22,7 @@ public class PolicyController {
 
     private final PolicyService policyService;
 
-    /**
-     * Returns all 3 tiers with premiums and estimated payouts
-     * based on the authenticated user's income profile.
-     * Frontend calls this to render the plan selection screen.
-     */
+
     @GetMapping("/tiers")
     public ResponseEntity<List<PolicyTierInfoResponse>> getTiers(
             @AuthenticationPrincipal UserDetails user) {

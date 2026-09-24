@@ -1,4 +1,3 @@
-// com/gigshield/fraud/entity/FraudRecord.java
 package com.gigshield.fraud.entity;
 
 import jakarta.persistence.*;
@@ -20,13 +19,13 @@ public class FraudRecord {
     private Long userId;
 
     @Column(nullable = false)
-    private String claimId;          // MongoDB claim document ID
+    private String claimId;
 
     @Column(nullable = false)
     private Integer fraudScore;
 
     @Column(nullable = false)
-    private String recommendation;   // AUTO_APPROVE | REVIEW | REJECT
+    private String recommendation;
 
     private String eventType;
 

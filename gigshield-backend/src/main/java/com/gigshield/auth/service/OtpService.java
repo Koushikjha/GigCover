@@ -1,4 +1,3 @@
-// com/gigshield/auth/service/OtpService.java
 package com.gigshield.auth.service;
 
 import com.gigshield.auth.entity.OtpRecord;
@@ -29,11 +28,9 @@ public class OtpService {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    // ── Generate and send ─────────────────────────────────────────────────────
 
     @Transactional
     public void generateAndSend(String phone) {
-        // Invalidate any existing unverified OTPs for this phone
         otpRepository.invalidateAllForPhone(phone);
 
         String otp = generateOtp();
@@ -51,7 +48,6 @@ public class OtpService {
         log.info("OTP generated and sent to phone={}", phone);
     }
 
-    // ── Verify ────────────────────────────────────────────────────────────────
 
     @Transactional
     public void verify(String phone, String otp) {
@@ -60,9 +56,7 @@ public class OtpService {
                         "No valid OTP found for this number. " +
                                 "Please request a new OTP."));
 
-        // Brute-force guard
         if (record.getAttempts() >= maxAttempts) {
-            // Mark as verified (consumed) to prevent further attempts
             record.setVerified(true);
             otpRepository.save(record);
             throw new IllegalStateException(
@@ -78,13 +72,11 @@ public class OtpService {
                     "Incorrect OTP. " + remaining + " attempt(s) remaining.");
         }
 
-        // Valid — mark as consumed
         record.setVerified(true);
         otpRepository.save(record);
         log.info("OTP verified successfully for phone={}", phone);
     }
 
-    // ── Internal ──────────────────────────────────────────────────────────────
 
     private String generateOtp() {
         // 6-digit OTP

@@ -1,4 +1,3 @@
-// com/gigshield/user/controller/UserController.java
 package com.gigshield.user.controller;
 
 import com.gigshield.user.dto.UpdateProfileRequest;

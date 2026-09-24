@@ -1,4 +1,3 @@
-// com/gigshield/event/controller/EventController.java
 package com.gigshield.event.controller;
 
 import com.gigshield.event.dto.CreateEventRequest;

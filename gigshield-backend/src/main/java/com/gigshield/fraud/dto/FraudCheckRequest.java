@@ -1,4 +1,3 @@
-// com/gigshield/fraud/dto/FraudCheckRequest.java
 package com.gigshield.fraud.dto;
 
 import lombok.*;

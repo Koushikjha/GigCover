@@ -1,4 +1,3 @@
-// com/gigshield/payment/service/PaymentService.java
 package com.gigshield.payment.service;
 
 import com.gigshield.payment.dto.CreateOrderResponse;
@@ -37,8 +36,6 @@ public class PaymentService {
     @Value("${gigshield.razorpay.payout-account-id:}")
     private String payoutAccountId;
 
-    // ── Premium collection ────────────────────────────────────────────────────
-
     @Transactional
     public CreateOrderResponse createPremiumOrder(Long userId, Long policyId, int amountInr) {
         try {
@@ -70,7 +67,6 @@ public class PaymentService {
         }
     }
 
-    // ── Webhook handler ───────────────────────────────────────────────────────
 
     @Transactional
     public void handleWebhook(String payload, String signature) {
@@ -114,13 +110,8 @@ public class PaymentService {
         }
     }
 
-    // ── Claim payout ──────────────────────────────────────────────────────────
-
     @Transactional
     public void initiateClaimPayout(String claimId, Long userId, int amountInr) {
-        // Idempotency: skip if payout already recorded — safe against Kafka
-        // redelivery (consumer restart / rebalance) as well as the old
-        // synchronous call path.
         if (paymentRepository.findByClaimId(claimId).isPresent()) {
             log.warn("Payout already recorded for claimId={}", claimId);
             return;
@@ -135,8 +126,6 @@ public class PaymentService {
                 .build();
         paymentRepository.save(record);
 
-        // TODO: POST to Razorpay /v1/payouts when fund_account_id is registered
-        // In test mode: log only
         log.info("[PAYOUT] ₹{} queued for claimId={} userId={}", amountInr, claimId, userId);
 
         record.setStatus(PaymentStatus.SUCCESS);
@@ -158,7 +147,6 @@ public class PaymentService {
         }
     }
 
-    // ── Internal ──────────────────────────────────────────────────────────────
 
     private void verifyWebhookSignature(String payload, String signature) {
         if (webhookSecret == null || webhookSecret.isBlank()) {

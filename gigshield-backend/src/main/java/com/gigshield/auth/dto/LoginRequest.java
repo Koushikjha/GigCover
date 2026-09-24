@@ -1,4 +1,3 @@
-// com/gigshield/auth/dto/LoginRequest.java — now only phone, no password
 package com.gigshield.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;

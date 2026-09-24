@@ -1,4 +1,3 @@
-// com/gigshield/risk/service/RiskService.java
 package com.gigshield.risk.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,20 +36,17 @@ public class RiskService {
         User   user     = userService.findByPhone(phone);
         String cacheKey = "risk:score:" + phone;
 
-        // ── Redis cache check ─────────────────────────────────────────────────
         String cached = redisTemplate.opsForValue().get(cacheKey);
         if (cached != null) {
             try {
                 log.debug("Risk score cache hit for user={}", phone);
                 return objectMapper.readValue(cached, RiskScoreResponse.class);
             } catch (JsonProcessingException e) {
-                // Corrupt cache entry — evict and re-fetch
                 log.warn("Corrupt risk score cache for user={}, evicting", phone);
                 redisTemplate.delete(cacheKey);
             }
         }
 
-        // ── Call ML sidecar ───────────────────────────────────────────────────
         RiskScoreRequest request = RiskScoreRequest.builder()
                 .city(user.getCity())
                 .latitude(user.getLatitude())
@@ -60,16 +56,13 @@ public class RiskService {
 
         RiskScoreResponse response = mlClient.getRiskScore(request);
 
-        // Clamp premium within product bounds
         int clampedPremium = Math.max(AppConstants.PREMIUM_MIN_INR,
                 Math.min(AppConstants.PREMIUM_MAX_INR,
                         response.getRecommendedPremium()));
         response.setRecommendedPremium(clampedPremium);
 
-        // ── Persist risk profile ──────────────────────────────────────────────
         upsertRiskProfile(user, response);
 
-        // ── Cache as JSON ─────────────────────────────────────────────────────
         try {
             String json = objectMapper.writeValueAsString(response);
             redisTemplate.opsForValue().set(
@@ -83,24 +76,6 @@ public class RiskService {
         return response;
     }
 
-    // ── Internal ──────────────────────────────────────────────────────────────
-
-    /**
-     * "Find-or-create" is not atomic against {@code idx_risk_user}'s unique
-     * constraint on its own: two requests for the same user that both miss
-     * the Redis cache (e.g. two frontend components independently calling
-     * GET /api/v1/risk/score right after signup, before either has
-     * committed) can both see {@code findByUserId(...)} as empty and both
-     * attempt an INSERT — one wins, the other fails with
-     * DataIntegrityViolationException on the {@code risk_profiles.idx_risk_user}
-     * constraint. Rather than let that 500 the request, treat it as "lost
-     * the race" and retry as an update against the row the other request
-     * just committed. Safe to retry in the same transaction: with
-     * GenerationType.IDENTITY the INSERT (and thus the constraint
-     * violation) happens synchronously inside save(), not deferred to a
-     * later flush, and MySQL/InnoDB doesn't poison the rest of the
-     * transaction after a single failed statement the way Postgres does.
-     */
     private void upsertRiskProfile(User user, RiskScoreResponse response) {
         RiskProfile profile = riskRepository
                 .findByUserId(user.getId())

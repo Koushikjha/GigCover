@@ -1,4 +1,3 @@
-// com/gigshield/user/mapper/UserMapper.java
 package com.gigshield.user.mapper;
 
 import com.gigshield.auth.dto.RegisterRequest;
@@ -27,7 +26,6 @@ public class UserMapper {
                 .build();
     }
 
-    // No encodedPassword param — OTP auth, no password stored
     public User toEntity(RegisterRequest req) {
         return User.builder()
                 .phone(req.getPhone())

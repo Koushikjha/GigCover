@@ -1,22 +1,20 @@
-# src/main/resources/application-dev.yml
 spring:
   jpa:
     hibernate:
-      ddl-auto: update          # auto-create tables in dev
+      ddl-auto: update
     show-sql: false
 
 
 
 gigshield:
 
-  # Add inside gigshield: block in application-dev.yml
   gigshield:
     otp:
       expiry-minutes: 5
       max-attempts: 3
 
     sms:
-      mock: true   # OTP printed to logs in dev
+      mock: true
 
   jwt:
     secret: dev-only-secret-key-minimum-32-characters-long!!

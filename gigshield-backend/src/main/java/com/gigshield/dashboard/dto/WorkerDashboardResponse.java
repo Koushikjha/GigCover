@@ -1,4 +1,3 @@
-// com/gigshield/dashboard/dto/WorkerDashboardResponse.java
 package com.gigshield.dashboard.dto;
 
 import com.gigshield.policy.dto.PolicyResponse;

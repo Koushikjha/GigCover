@@ -1,4 +1,3 @@
-// com/gigshield/claim/dto/AdminReviewRequest.java
 package com.gigshield.claim.dto;
 
 import jakarta.validation.constraints.NotNull;

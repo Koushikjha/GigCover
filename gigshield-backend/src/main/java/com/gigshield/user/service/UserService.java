@@ -1,4 +1,3 @@
-// com/gigshield/user/service/UserService.java
 package com.gigshield.user.service;
 
 import com.gigshield.auth.dto.RegisterRequest;
@@ -29,7 +28,6 @@ public class UserService implements UserDetailsService {
     private final UserMapper          userMapper;
     private final StringRedisTemplate redisTemplate;
 
-    // PasswordEncoder removed — no passwords
 
     @Override
     public UserDetails loadUserByUsername(String phone)
@@ -39,11 +37,7 @@ public class UserService implements UserDetailsService {
                         "User not found: " + phone));
     }
 
-    /**
-     * Called after OTP is verified.
-     * If user exists → login flow, return existing user.
-     * If user doesn't exist → registration flow, create and return.
-     */
+
     @Transactional
     public User findOrCreate(String phone, RegisterRequest registrationData) {
         return userRepository.findByPhone(phone)
@@ -99,14 +93,6 @@ public class UserService implements UserDetailsService {
 
         UserResponse response = userMapper.toResponse(userRepository.save(user));
 
-        // RiskService caches GET /api/v1/risk/score (and the tier-pricing
-        // lookups it backs) per-phone in Redis for RISK_SCORE_CACHE_TTL_SEC
-        // (1 hour). That score is a function of the worker's coordinates —
-        // if we don't evict it here, a worker who updates their registered
-        // location to somewhere genuinely riskier keeps seeing their OLD
-        // location's premium/score for up to an hour, which looks exactly
-        // like "the system isn't responding to real conditions" even
-        // though nothing else is wrong.
         if (locationChanged) {
             redisTemplate.delete("risk:score:" + phone);
             log.info("Evicted stale risk-score cache for user={} after location update", phone);

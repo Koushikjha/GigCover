@@ -1,4 +1,3 @@
-// com/gigshield/event/kafka/DisruptionEventProducer.java
 package com.gigshield.event.kafka;
 
 import com.gigshield.event.entity.DisruptionEvent;
@@ -15,12 +14,7 @@ public class DisruptionEventProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    /**
-     * Publishes the just-persisted DisruptionEvent so downstream consumers
-     * (claims automation, and — via that — payment automation) can react
-     * asynchronously. Keyed by city so all events for the same city stay
-     * ordered on the same partition.
-     */
+
     public void publish(DisruptionEvent event) {
         DisruptionEventMessage message = DisruptionEventMessage.builder()
                 .eventId(event.getId())

@@ -1,4 +1,3 @@
-// com/gigshield/kafka/KafkaProducerConfig.java
 package com.gigshield.kafka;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -26,8 +25,6 @@ public class KafkaProducerConfig {
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        // Durability: wait for all in-sync replicas, retry transient broker errors,
-        // and avoid duplicate re-sends of the same record reordering on retry.
         config.put(ProducerConfig.ACKS_CONFIG, "all");
         config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
         config.put(ProducerConfig.RETRIES_CONFIG, 5);

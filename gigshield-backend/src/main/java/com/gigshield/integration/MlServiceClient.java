@@ -1,4 +1,3 @@
-// com/gigshield/integration/MlServiceClient.java
 package com.gigshield.integration;
 
 import com.gigshield.config.AppConstants;
@@ -28,7 +27,6 @@ public class MlServiceClient {
     @Value("${gigshield.ml.base-url}")
     private String mlBaseUrl;
 
-    // ── Risk score ────────────────────────────────────────────────────────────
 
     public RiskScoreResponse getRiskScore(RiskScoreRequest request) {
         UriComponentsBuilder builder = UriComponentsBuilder
@@ -38,7 +36,6 @@ public class MlServiceClient {
                 .queryParam("longitude", request.getLongitude())
                 .queryParam("platform",  request.getPlatform());
         if (request.getAt() != null) {
-            // Score as of a specific past moment, not live/now — see RiskScoreRequest#at.
             builder.queryParam("at", request.getAt().toString());
         }
         String url = builder.toUriString();
@@ -62,7 +59,6 @@ public class MlServiceClient {
         }
     }
 
-    // ── Fraud check ───────────────────────────────────────────────────────────
 
     public FraudCheckResponse checkFraud(FraudCheckRequest request) {
         String url = mlBaseUrl + AppConstants.ML_FRAUD_CHECK_PATH;
@@ -85,25 +81,12 @@ public class MlServiceClient {
         }
     }
 
-    // ── Trigger check ─────────────────────────────────────────────────────────
 
-    /**
-     * City-only, live trigger check — used by {@code EventTriggerScheduler},
-     * which polls a fixed monitored-city list with no specific worker to
-     * borrow coordinates from. The ML sidecar resolves a city centroid
-     * internally for this call.
-     */
     public TriggerCheckResponse getTriggerCheck(String city) {
         return getTriggerCheck(city, null, null, null);
     }
 
-    /**
-     * Trigger check against real coordinates (a specific worker's, or an
-     * average of the affected workers'), as of a specific moment rather
-     * than live/now. Used by {@code DisruptionEventVerificationService} to
-     * corroborate a specific event instead of relying on a city-centroid
-     * approximation.
-     */
+
     public TriggerCheckResponse getTriggerCheck(String city, Double latitude, Double longitude, LocalDateTime at) {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromHttpUrl(mlBaseUrl + AppConstants.ML_TRIGGER_CHECK_PATH)
@@ -133,7 +116,6 @@ public class MlServiceClient {
         }
     }
 
-    // ── Fallbacks ─────────────────────────────────────────────────────────────
 
     private RiskScoreResponse buildFallbackRiskScore() {
         RiskScoreResponse r = new RiskScoreResponse();

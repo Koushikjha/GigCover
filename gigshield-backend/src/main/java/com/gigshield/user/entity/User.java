@@ -1,4 +1,3 @@
-// com/gigshield/user/entity/User.java
 package com.gigshield.user.entity;
 
 import com.gigshield.user.enums.DeliveryPlatform;
@@ -30,7 +29,6 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true, length = 10)
     private String phone;
 
-    // passwordHash removed — OTP is the only credential
 
     @Column(nullable = false)
     private String fullName;
@@ -79,14 +77,11 @@ public class User implements UserDetails {
     @PreUpdate
     void preUpdate() { updatedAt = LocalDateTime.now(); }
 
-    // ── UserDetails — OTP auth, no password needed ────────────────────────────
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    // No password — return null, Spring Security never checks it
-    // because we bypass DaoAuthenticationProvider entirely
     @Override public String  getPassword()             { return null; }
     @Override public String  getUsername()             { return phone; }
     @Override public boolean isAccountNonExpired()     { return true; }

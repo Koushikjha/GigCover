@@ -1,4 +1,3 @@
-// com/gigshield/kafka/KafkaConsumerConfig.java
 package com.gigshield.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -20,15 +19,6 @@ import org.springframework.util.backoff.ExponentialBackOff;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Consumer-side Kafka wiring shared by every {@code @KafkaListener} in the
- * app (claims automation, payment automation, audit).
- *
- * Failed messages are retried with backoff and, once retries are exhausted,
- * routed to a "<topic>.DLT" dead-letter topic instead of blocking the
- * partition or silently dropping the event — so a bad ML payload or a
- * transient DB outage never wedges the pipeline.
- */
 @Configuration
 public class KafkaConsumerConfig {
 
@@ -59,7 +49,6 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(consumerFactory);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
 
-        // 3 retries with exponential backoff (1s, 2s, 4s), then dead-letter.
         ExponentialBackOff backOff = new ExponentialBackOff(1000L, 2.0);
         backOff.setMaxElapsedTime(15_000L);
 

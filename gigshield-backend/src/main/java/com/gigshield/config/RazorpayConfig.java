@@ -1,4 +1,3 @@
-// com/gigshield/config/RazorpayConfig.java
 package com.gigshield.config;
 
 import com.razorpay.RazorpayClient;

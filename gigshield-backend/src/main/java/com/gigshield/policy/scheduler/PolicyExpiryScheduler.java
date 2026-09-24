@@ -1,4 +1,3 @@
-// com/gigshield/policy/scheduler/PolicyExpiryScheduler.java
 package com.gigshield.policy.scheduler;
 
 import com.gigshield.policy.service.PolicyService;
@@ -14,7 +13,6 @@ public class PolicyExpiryScheduler {
 
     private final PolicyService policyService;
 
-    /** Runs daily at midnight IST */
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Kolkata")
     public void expireStalePolices() {
         log.info("Running policy expiry job...");

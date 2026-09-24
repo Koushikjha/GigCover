@@ -1,4 +1,3 @@
-// com/gigshield/payment/kafka/PayoutEventProducer.java
 package com.gigshield.payment.kafka;
 
 import com.gigshield.kafka.KafkaTopics;
@@ -16,7 +15,6 @@ public class PayoutEventProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    /** Called by ClaimService once a claim is approved (auto or admin). */
     public void requestPayout(String claimId, Long userId, int amountInr, String source) {
         PayoutRequestedEvent event = PayoutRequestedEvent.builder()
                 .claimId(claimId)
@@ -26,7 +24,6 @@ public class PayoutEventProducer {
                 .requestedAt(LocalDateTime.now())
                 .build();
 
-        // Keyed by userId so a worker's payouts are processed in order.
         kafkaTemplate.send(KafkaTopics.PAYOUT_REQUESTED, String.valueOf(userId), event)
                 .whenComplete((result, ex) -> {
                     if (ex != null) {
@@ -39,7 +36,6 @@ public class PayoutEventProducer {
                 });
     }
 
-    /** Called by PaymentService once the payout has actually been executed. */
     public void publishCompleted(String claimId, Long userId, int amountInr, String status) {
         PayoutCompletedEvent event = PayoutCompletedEvent.builder()
                 .claimId(claimId)

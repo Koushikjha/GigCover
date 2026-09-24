@@ -1,4 +1,3 @@
-// com/gigshield/auth/dto/SendOtpRequest.java
 package com.gigshield.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;

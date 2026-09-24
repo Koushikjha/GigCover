@@ -1,4 +1,3 @@
-// com/gigshield/claim/enums/ClaimStatus.java
 package com.gigshield.claim.enums;
 
 public enum ClaimStatus {

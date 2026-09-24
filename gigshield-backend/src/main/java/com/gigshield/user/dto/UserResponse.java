@@ -1,4 +1,3 @@
-// com/gigshield/user/dto/UserResponse.java
 package com.gigshield.user.dto;
 
 import com.gigshield.user.enums.DeliveryPlatform;

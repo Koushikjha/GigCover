@@ -1,4 +1,3 @@
-// com/gigshield/auth/dto/VerifyOtpRequest.java
 package com.gigshield.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
@@ -17,9 +16,6 @@ public class VerifyOtpRequest {
     @Pattern(regexp = "^\\d{6}$", message = "OTP must be 6 digits")
     private String otp;
 
-    // ── Registration fields — only required for new users ────────────────────
-    // All optional — if user already exists these are ignored
-
     private String fullName;
 
     private String city;
@@ -28,5 +24,5 @@ public class VerifyOtpRequest {
 
     private Double longitude;
 
-    private String platform;   // ZOMATO | SWIGGY | OTHER
+    private String platform;
 }

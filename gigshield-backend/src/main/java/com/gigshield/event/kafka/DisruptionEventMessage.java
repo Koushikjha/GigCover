@@ -1,4 +1,3 @@
-// com/gigshield/event/kafka/DisruptionEventMessage.java
 package com.gigshield.event.kafka;
 
 import com.gigshield.event.enums.EventType;
@@ -9,13 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * Kafka payload published to {@code gigshield.events.disruption} whenever a
- * DisruptionEvent is created — by an admin, or by the ML-driven
- * {@code EventTriggerScheduler}. This is the entry point of the event-driven
- * pipeline: claims automation and, downstream, payment automation both react
- * to this message instead of being called synchronously.
- */
+
 @Data
 @Builder
 @NoArgsConstructor

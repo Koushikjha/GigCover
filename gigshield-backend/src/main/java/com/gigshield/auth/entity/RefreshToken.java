@@ -17,7 +17,7 @@ public class RefreshToken {
     private String token;
 
     @Column(nullable = false)
-    private String username;   // maps to User.phone
+    private String username;
 
     @Column(nullable = false)
     private Instant expiresAt;

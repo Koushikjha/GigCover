@@ -1,4 +1,3 @@
-// com/gigshield/config/SecurityConfig.java
 package com.gigshield.config;
 
 import com.gigshield.auth.filter.JwtFilter;
@@ -80,6 +79,4 @@ public class SecurityConfig {
         return source;
     }
 
-    // PasswordEncoder bean removed — no passwords in system
-    // AuthenticationManager bean removed — OTP replaces password auth
 }
