@@ -3,7 +3,7 @@ services:
   backend:
     image: koushikjha/gigshield-backend:latest
     build:
-      context: ./backend
+      context: ./gigshield-backend
       dockerfile: Dockerfile
     container_name: gigshield-backend
     ports:
@@ -21,7 +21,7 @@ services:
   ml:
     image: koushikjha/gigshield-ml:latest
     build:
-      context: ./ml
+      context: ./gigshield-ml
       dockerfile: Dockerfile
     container_name: gigshield-ml
     ports:
@@ -36,7 +36,7 @@ services:
   frontend:
     image: koushikjha/gigshield-frontend:latest
     build:
-      context: ./frontend
+      context: ./gigshield-frontend
       dockerfile: Dockerfile
       args:
         VITE_API_BASE_URL: http://localhost:8080
